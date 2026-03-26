@@ -459,6 +459,10 @@ body{
   text-transform:uppercase;
 }
 
+/* ── BACKDROP (mobile close) ─────────────────────────── */
+#tip-backdrop{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.5);}
+#tip-backdrop.show{display:block;}
+
 /* ── TOOLTIP ─────────────────────────────────────────── */
 #tooltip{
   position:fixed;
@@ -577,8 +581,17 @@ body{
   #patrocinadores{padding:48px 4vw 60px;flex-direction:column;gap:24px;}
   .pat-logos{gap:24px;}
 
-  /* Tooltip desativa no touch */
-  .sched-tooltip{display:none !important;}
+  /* Tooltip centralizado no mobile */
+  #tooltip{
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) scale(.95) !important;
+    width:88vw;
+    max-width:360px;
+  }
+  #tooltip.show{
+    transform:translate(-50%,-50%) scale(1) !important;
+  }
 }
 @media(max-width:400px){
   .part-grid{grid-template-columns:repeat(2,1fr);gap:20px 12px;}
@@ -679,6 +692,7 @@ body{
 </section>
 
 <!-- ── TOOLTIP ── -->
+<div id="tip-backdrop"></div>
 <div id="tooltip">
   <div id="tt-banner">
     <div id="tt-banner-name"></div>
@@ -784,6 +798,7 @@ function buildGrid(){
         inner.addEventListener('mouseenter',e=>showTip(e,cat,ev,row.time));
         inner.addEventListener('mouseleave',hideTip);
         inner.addEventListener('mousemove',moveTip);
+        inner.addEventListener('touchstart',e=>{e.preventDefault();showTip(e,cat,ev,row.time);},{passive:false});
 
         cell.appendChild(inner);
         r.appendChild(cell);
@@ -800,30 +815,32 @@ function buildGrid(){
 // Tooltip
 const tip=document.getElementById('tooltip');
 
+const backdrop=document.getElementById('tip-backdrop');
+backdrop.addEventListener('click',hideTip);
+backdrop.addEventListener('touchstart',e=>{e.preventDefault();hideTip();},{passive:false});
+
 function showTip(e,cat,ev,time){
   const banner=document.getElementById('tt-banner');
   banner.style.background=`linear-gradient(135deg,${cat.color}cc,${cat.color}66)`;
-  // image
   let imgEl=banner.querySelector('img');
   if(ev.img){
     if(!imgEl){imgEl=document.createElement('img');imgEl.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;opacity:.9';banner.prepend(imgEl);}
-    imgEl.src=ev.img;
-    imgEl.style.display='block';
-  } else if(imgEl){
-    imgEl.style.display='none';
-  }
+    imgEl.src=ev.img;imgEl.style.display='block';
+  } else if(imgEl){imgEl.style.display='none';}
   const bnName=document.getElementById('tt-banner-name');
-  if(ev.img){bnName.textContent='';} else {bnName.textContent=ev.artist||ev.title;}
+  if(ev.img){bnName.textContent='';}else{bnName.textContent=ev.artist||ev.title;}
   document.getElementById('tt-banner-cat').textContent=cat.label;
   document.getElementById('tt-title').textContent=ev.title;
   document.getElementById('tt-artist').textContent=ev.artist||'';
   document.getElementById('tt-desc').textContent=ev.desc;
   document.getElementById('tt-time').textContent=time;
   tip.classList.add('show');
-  posTip(e);
+  const isMobile=window.innerWidth<=680;
+  if(isMobile){backdrop.classList.add('show');}
+  else{backdrop.classList.remove('show');posTip(e);}
 }
-function hideTip(){tip.classList.remove('show');}
-function moveTip(e){posTip(e);}
+function hideTip(){tip.classList.remove('show');backdrop.classList.remove('show');}
+function moveTip(e){if(window.innerWidth>680) posTip(e);}
 function posTip(e){
   const W=310,H=310,M=16;
   let x=e.clientX+20,y=e.clientY-70;
