@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtCon</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --yellow:#E8FF4D;
+  --black:#000;
+  --card-gap:7px;
+}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--black);
+  color:#fff;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+/* ── COVER ───────────────────────────────────────────── */
+#cover{
+  height:100vh;
+  background:var(--yellow);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+#logo-wrap{
+  opacity:0;
+  transform:scale(0.96);
+  animation:logoIn 1.4s cubic-bezier(.16,1,.3,1) forwards 0.4s;
+}
+@keyframes logoIn{
+  to{opacity:1;transform:scale(1);}
+}
+#logo-img{
+  display:block;
+  width:clamp(220px,30vw,420px);
+  height:auto;
+  mix-blend-mode:multiply;
+}
+/* CSS fallback if image not found */
+#logo-fallback{
+  display:none;
+  text-align:center;
+}
+#logo-fallback .art{
+  display:block;
+  font-size:clamp(80px,12vw,160px);
+  font-weight:900;
+  color:#000;
+  line-height:0.82;
+  letter-spacing:-0.04em;
+  font-style:italic;
+}
+#logo-fallback .con{
+  display:block;
+  font-size:clamp(52px,7.5vw,100px);
+  font-weight:900;
+  color:#000;
+  letter-spacing:0.14em;
+  margin-top:4px;
+}
+#cover-meta{
+  position:absolute;
+  bottom:80px;
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#00000066;
+  font-weight:600;
+  opacity:0;
+  animation:logoIn 1s ease forwards 1.8s;
+}
+
+/* ── SCHEDULE ────────────────────────────────────────── */
+#schedule{
+  padding:90px 4vw 120px;
+  min-height:100vh;
+  background:#000;
+}
+.section-eyebrow{
+  font-size:10px;
+  letter-spacing:0.3em;
+  color:var(--yellow);
+  text-transform:uppercase;
+  margin-bottom:10px;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.section-eyebrow.vis{opacity:1;transform:translateY(0);}
+.section-heading{
+  font-size:clamp(30px,4.5vw,58px);
+  font-weight:900;
+  letter-spacing:-.025em;
+  line-height:1;
+  color:#fff;
+  margin-bottom:52px;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .7s ease .1s, transform .7s ease .1s;
+}
+.section-heading span{color:var(--yellow);}
+.section-heading.vis{opacity:1;transform:translateY(0);}
+
+/* Grid */
+.sched-grid{display:grid;gap:var(--card-gap);}
+.sched-header-row,
+.sched-row{
+  display:grid;
+  grid-template-columns:72px repeat(7,1fr);
+  gap:var(--card-gap);
+}
+.col-head{
+  font-size:9px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#444;
+  text-align:center;
+  padding:6px 2px 10px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .5s ease, transform .5s ease;
+}
+.col-head.vis{opacity:1;transform:translateY(0);}
+.col-head .dot{
+  width:7px;height:7px;border-radius:50%;
+  display:inline-block;margin-right:5px;
+  vertical-align:middle;
+}
+.time-cell{
+  font-size:11px;
+  color:#333;
+  display:flex;
+  align-items:flex-start;
+  padding-top:16px;
+  letter-spacing:.04em;
+  font-variant-numeric:tabular-nums;
+  opacity:0;
+  transition:opacity .5s ease;
+}
+.time-cell.vis{opacity:1;}
+.ev-cell{
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity .4s ease, transform .4s ease;
+}
+.ev-cell.vis{opacity:1;transform:translateY(0);}
+.ev-inner{
+  height:100%;
+  min-height:84px;
+  border-radius:5px;
+  padding:13px 15px;
+  background:var(--c);
+  cursor:default;
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  position:relative;
+  overflow:hidden;
+}
+.ev-inner:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 10px 32px rgba(0,0,0,.55);
+  filter:brightness(1.12);
+}
+.ev-title{
+  font-size:13px;
+  font-weight:800;
+  line-height:1.25;
+  color:#fff;
+  text-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.ev-artist{
+  font-size:10px;
+  color:rgba(255,255,255,.62);
+  margin-top:6px;
+  font-weight:500;
+}
+.empty-cell{min-height:84px;}
+
+/* ── JUSTIFICATIVA ───────────────────────────────────── */
+#justificativa{
+  background:#000;
+  padding:120px 4vw 140px;
+  border-top:1px solid #111;
+}
+.just-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  max-width:1100px;
+}
+.just-left{}
+.just-eyebrow{
+  font-size:10px;
+  letter-spacing:.3em;
+  color:var(--yellow);
+  text-transform:uppercase;
+  margin-bottom:24px;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.just-eyebrow.vis{opacity:1;transform:translateY(0);}
+.just-statement{
+  font-size:clamp(32px,4vw,52px);
+  font-weight:900;
+  line-height:1.08;
+  letter-spacing:-.025em;
+  color:#fff;
+  margin-bottom:48px;
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .7s ease .1s, transform .7s ease .1s;
+}
+.just-statement em{color:var(--yellow);font-style:normal;}
+.just-statement.vis{opacity:1;transform:translateY(0);}
+.just-right{
+  display:flex;
+  flex-direction:column;
+  gap:36px;
+  padding-top:8px;
+}
+.just-para{
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+.just-para.vis{opacity:1;transform:translateY(0);}
+.just-para p{
+  font-size:15px;
+  line-height:1.8;
+  color:#666;
+}
+.just-para strong{
+  color:#aaa;
+  font-weight:600;
+}
+.just-highlight{
+  border-left:3px solid var(--yellow);
+  padding-left:20px;
+  margin:0;
+}
+.just-highlight p{
+  font-size:18px;
+  line-height:1.65;
+  color:#aaa;
+  font-style:italic;
+}
+
+/* ── PARTICIPANTES ───────────────────────────────────── */
+#participantes{
+  background:#0a0a0a;
+  padding:100px 4vw 120px;
+  border-top:1px solid #111;
+}
+.part-eyebrow{
+  font-size:10px;
+  letter-spacing:.3em;
+  color:var(--yellow);
+  text-transform:uppercase;
+  margin-bottom:10px;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.part-eyebrow.vis{opacity:1;transform:translateY(0);}
+.part-heading{
+  font-size:clamp(28px,4vw,52px);
+  font-weight:900;
+  letter-spacing:-.025em;
+  color:#fff;
+  margin-bottom:64px;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .7s ease .1s,transform .7s ease .1s;
+}
+.part-heading.vis{opacity:1;transform:translateY(0);}
+.part-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:48px 32px;
+}
+.part-card{
+  opacity:0;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease;
+  text-align:center;
+}
+.part-card.vis{opacity:1;transform:translateY(0);}
+.part-avatar{
+  width:110px;height:110px;
+  border-radius:50%;
+  overflow:hidden;
+  margin:0 auto 16px;
+  border:3px solid var(--av-color,#222);
+  box-shadow:0 0 0 1px #000;
+  position:relative;
+}
+.part-avatar img{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center 15%;
+  filter:grayscale(15%);
+  transition:filter .3s ease;
+}
+.part-avatar-initials{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:900;color:rgba(255,255,255,.4);
+  background:var(--av-color,#222);
+}
+.part-card:hover .part-avatar img{filter:grayscale(0%);}
+.part-name{
+  font-size:14px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:.02em;
+  margin-bottom:4px;
+}
+.part-role{
+  font-size:9px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--role-color,#555);
+  margin-bottom:10px;
+}
+.part-desc{
+  font-size:12px;
+  color:#888;
+  line-height:1.65;
+}
+
+/* ── CTA ─────────────────────────────────────────────── */
+#cta{
+  background:#000;
+  padding:100px 4vw 80px;
+  display:flex;
+  justify-content:center;
+  border-top:1px solid #111;
+}
+.cta-card{
+  background:var(--yellow);
+  color:#000;
+  border-radius:16px;
+  padding:48px 52px;
+  width:100%;
+  max-width:540px;
+}
+.cta-event-label{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  color:#00000066;
+  margin-bottom:8px;
+}
+.cta-date-venue{
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-.02em;
+  margin-bottom:32px;
+}
+.cta-divider{height:1px;background:#00000022;margin:24px 0;}
+.cta-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  margin-bottom:0;
+}
+.cta-list li{
+  font-size:14px;
+  font-weight:500;
+  color:#000;
+}
+.cta-list li::before{content:'→ ';opacity:.5;}
+.cta-price-area{margin-top:0;}
+.cta-price-label{
+  font-size:13px;
+  color:#00000088;
+  font-style:italic;
+}
+.cta-btn{
+  display:block;
+  width:100%;
+  margin-top:28px;
+  padding:16px;
+  background:#000;
+  color:var(--yellow);
+  border:none;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:opacity .2s;
+}
+.cta-btn:hover{opacity:.8;}
+
+/* ── PATROCINADORES ──────────────────────────────────── */
+#patrocinadores{
+  background:#000;
+  padding:60px 4vw 80px;
+  border-top:1px solid #0e0e0e;
+}
+.pat-block{
+  display:flex;
+  align-items:center;
+  gap:40px;
+  margin-bottom:36px;
+}
+.pat-block:last-child{margin-bottom:0;}
+.pat-label-sm{
+  font-size:8px;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  color:#333;
+  min-width:72px;
+}
+.pat-logos{
+  display:flex;
+  align-items:center;
+  gap:36px;
+  flex-wrap:wrap;
+}
+.pat-logo{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#fff;
+  opacity:.55;
+  transition:opacity .2s;
+}
+.pat-logo:hover{opacity:1;}
+.pat-logo-sm{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  color:#fff;
+  opacity:.3;
+}
+.pat-rouanet{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#fff;opacity:.3;
+}
+.pat-rouanet span{font-size:18px;}
+.pat-footer{
+  margin-top:48px;
+  font-size:9px;
+  letter-spacing:.15em;
+  color:#222;
+  text-transform:uppercase;
+}
+
+/* ── TOOLTIP ─────────────────────────────────────────── */
+#tooltip{
+  position:fixed;
+  z-index:9999;
+  width:310px;
+  border-radius:8px;
+  overflow:hidden;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(8px) scale(.97);
+  transition:opacity .15s ease, transform .15s ease;
+  box-shadow:0 24px 64px rgba(0,0,0,.9);
+  border:1px solid #1c1c1c;
+}
+#tooltip.show{opacity:1;transform:translateY(0) scale(1);}
+#tt-banner{
+  height:140px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-start;
+  padding:16px 20px;
+  position:relative;
+  overflow:hidden;
+}
+#tt-banner-name{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:-.02em;
+  line-height:1;
+  color:rgba(0,0,0,.18);
+  position:absolute;
+  top:12px;right:12px;
+  text-align:right;
+  max-width:90%;
+  line-height:1.1;
+}
+#tt-banner-cat{
+  font-size:9px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  font-weight:700;
+  color:rgba(0,0,0,.45);
+  position:relative;
+  z-index:1;
+}
+#tt-body{
+  background:#0c0c0c;
+  padding:16px 20px 20px;
+}
+#tt-title{
+  font-size:19px;
+  font-weight:900;
+  color:#fff;
+  line-height:1.15;
+  letter-spacing:-.02em;
+  margin-bottom:4px;
+}
+#tt-artist{
+  font-size:12px;
+  color:#666;
+  margin-bottom:12px;
+}
+#tt-desc{
+  font-size:11px;
+  color:#555;
+  line-height:1.7;
+}
+#tt-time{
+  font-size:9px;
+  color:#2a2a2a;
+  margin-top:12px;
+  letter-spacing:.1em;
+}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media(max-width:900px){
+  .just-grid{grid-template-columns:1fr;gap:40px;}
+  .part-grid{grid-template-columns:repeat(3,1fr);gap:36px 24px;}
+  .cta-card{padding:40px 32px;}
+  .section-heading{font-size:clamp(28px,6vw,52px);}
+}
+@media(max-width:680px){
+  #cover{min-height:100svh;}
+  .section-eyebrow{font-size:9px;}
+  .section-heading{font-size:clamp(24px,7vw,40px);}
+
+  /* Schedule: horizontal scroll on mobile */
+  #schedule{padding:60px 0 80px;overflow-x:hidden;}
+  .sched-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 4vw 16px;}
+  .sched-scroll-wrap::-webkit-scrollbar{height:3px;}
+  .sched-scroll-wrap::-webkit-scrollbar-thumb{background:#222;border-radius:2px;}
+  .sched-header-row,.sched-row{grid-template-columns:60px repeat(7,120px);}
+  .sched-grid{gap:5px;min-width:920px;}
+  .section-eyebrow,.section-heading[data-anim]{padding-left:4vw;}
+
+  /* Participants: 2 cols */
+  .part-grid{grid-template-columns:repeat(2,1fr);gap:28px 16px;}
+  #participantes{padding:60px 4vw 80px;}
+  .part-avatar{width:80px;height:80px;}
+  .part-name{font-size:11px;}
+  .part-role{font-size:9px;}
+  .part-desc{font-size:10px;}
+
+  /* Justificativa */
+  #justificativa{padding:60px 4vw 80px;}
+  .just-statement{font-size:clamp(22px,6vw,38px);}
+  .just-para p{font-size:14px;}
+
+  /* CTA */
+  #cta{padding:60px 4vw;}
+  .cta-card{padding:32px 24px;border-radius:16px;}
+  .cta-date-line{font-size:clamp(28px,8vw,52px);}
+  .cta-includes{font-size:13px;}
+
+  /* Patrocinadores */
+  #patrocinadores{padding:48px 4vw 60px;flex-direction:column;gap:24px;}
+  .pat-logos{gap:24px;}
+
+  /* Tooltip desativa no touch */
+  .sched-tooltip{display:none !important;}
+}
+@media(max-width:400px){
+  .part-grid{grid-template-columns:repeat(2,1fr);gap:20px 12px;}
+  .part-avatar{width:68px;height:68px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── COVER ── -->
+<section id="cover">
+  <div id="logo-wrap">
+    <img id="logo-img" src="artcon_logo.png" alt="ArtCon"
+      onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'">
+    <div id="logo-fallback">
+      <span class="art">ART</span>
+      <span class="con">CON</span>
+    </div>
+  </div>
+  <div id="cover-meta">19.9 &nbsp;—&nbsp; Cidade das Artes, Rio de Janeiro</div>
+</section>
+
+<!-- ── SCHEDULE ── -->
+<section id="schedule">
+  <div class="section-eyebrow" data-anim>programação</div>
+  <div class="section-heading" data-anim>Um dia de arte.<br><span>Das 10h30 às 22h.</span></div>
+  <div class="sched-scroll-wrap"><div class="sched-grid" id="sched-grid"></div></div>
+</section>
+
+<!-- ── JUSTIFICATIVA ── -->
+<section id="justificativa">
+  <div class="just-grid">
+    <div class="just-left">
+      <div class="just-eyebrow" data-anim>por que o ArtCon</div>
+      <div class="just-statement" data-anim>Em um mundo<br>acelerado demais,<br>uma pausa para a arte<br>e a <em>criatividade.</em></div>
+    </div>
+    <div class="just-right">
+      <div class="just-para" data-anim style="transition-delay:.1s">
+        <p>O Brasil tem uma das <strong>cenas artísticas mais vibrantes do mundo</strong>. O que aconteceria se misturássemos todas essas linguagens em um único evento — focado em presença e conexão real com artistas e com outros apaixonados pelas artes?</p>
+      </div>
+      <div class="just-para just-highlight" data-anim style="transition-delay:.2s">
+        <p>"O ArtCon é um festival de arte. Aqui você exerce seus desejos criativos, entra em contato com alguns dos mais importantes nomes de diferentes áreas — artes plásticas, cinema, teatro, música, design e gastronomia — e vive uma experiência que não cabe em uma tela."</p>
+      </div>
+      <div class="just-para" data-anim style="transition-delay:.3s">
+        <p>Um dia inteiro na <strong>Cidade das Artes</strong>, uma das principais casas de cultura da América Latina. Sem dispersão, sem networking obrigatório, sem business. Um momento para respirar e se relacionar com aquilo que te move.</p>
+      </div>
+      <div class="just-para" data-anim style="transition-delay:.4s">
+        <p>Com uma curadoria humana, cuidadosa e atual, o ArtCon te apresenta <strong>o que há de mais relevante nas artes hoje</strong> — e te convida a criar essa experiência conosco.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PARTICIPANTES ── -->
+<section id="participantes">
+  <div class="part-eyebrow" data-anim>participantes</div>
+  <div class="part-heading" data-anim>Quem você vai encontrar.</div>
+  <div class="part-grid" id="part-grid"></div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-card">
+    <div class="cta-event-label">ArtCon</div>
+    <div class="cta-date-venue">19 de setembro<br>Cidade das Artes<br>Rio de Janeiro</div>
+    <div class="cta-divider"></div>
+    <ul class="cta-list">
+      <li>Acesso a todas as atividades do dia</li>
+      <li>Teatro, Cinema, Talks, Expos, Oficinas e Música</li>
+      <li>Show de encerramento com Emicida</li>
+      <li>Experiência gastronômica inclusa</li>
+    </ul>
+    <div class="cta-divider"></div>
+    <div class="cta-price-area">
+      <div class="cta-price-label">ingressos em breve</div>
+    </div>
+    <button class="cta-btn">lista de espera</button>
+  </div>
+</section>
+
+<!-- ── PATROCINADORES ── -->
+<section id="patrocinadores">
+  <div class="pat-block">
+    <div class="pat-label-sm">realização</div>
+    <div class="pat-logos">
+      <span class="pat-logo">Seiva</span>
+      <span class="pat-logo">Janela Livraria</span>
+      <span class="pat-logo">GL</span>
+    </div>
+  </div>
+  <div class="pat-block">
+    <div class="pat-label-sm">incentivo</div>
+    <div class="pat-logos">
+      <div class="pat-rouanet"><span>✳</span>Lei Rouanet</div>
+    </div>
+  </div>
+  <div class="pat-footer">© ArtCon 2025 — todos os direitos reservados</div>
+</section>
+
+<!-- ── TOOLTIP ── -->
+<div id="tooltip">
+  <div id="tt-banner">
+    <div id="tt-banner-name"></div>
+    <div id="tt-banner-cat"></div>
+  </div>
+  <div id="tt-body">
+    <div id="tt-title"></div>
+    <div id="tt-artist"></div>
+    <div id="tt-desc"></div>
+    <div id="tt-time"></div>
+  </div>
+</div>
+
+<script>
+const CATS = [
+  {id:'teatro',   label:'Teatro',    color:'#2563eb'},
+  {id:'cinema',   label:'Cinema',    color:'#d97706'},
+  {id:'talks',    label:'Talks',     color:'#16a34a'},
+  {id:'expos',    label:'Expos',     color:'#0891b2'},
+  {id:'musica',   label:'Música',    color:'#dc2626'},
+  {id:'oficinas', label:'Oficinas',  color:'#db2777'},
+  {id:'culinaria',label:'Culinária', color:'#7c3aed'},
+];
+
+const SCHED = [
+  {time:'10h30', ev:{
+    talks:{title:'Boas-Vindas',artist:'',desc:'Abertura oficial do ArtCon. Apresentação do festival, dos espaços e da programação do dia.'},
+  }},
+  {time:'11h30', ev:{
+    musica:   {title:'Marcos Valle',artist:'Show',img:'marcos-valle.jpg',desc:'O compositor de Samba de Verão e Viola Enluarada abre a programação musical do dia.'},
+    oficinas: {title:'Desenhaço Poético',artist:'Helena Obersteiner & Angélica Freitas',img:'helena.jpeg',desc:'Oficina de desenho e poesia com a artista visual Helena Obersteiner e a poeta Angélica Freitas.'},
+    culinaria:{title:'Brunch',artist:'',desc:'Experiência gastronômica de abertura com quitutes, drinks e conexões antes da programação principal.'},
+  }},
+  {time:'13h', ev:{
+    teatro:   {title:'Noite de Estreia',artist:'Julia Portes',img:'noite%20de%20estreia.jpg',desc:'Espetáculo de uma das mais premiadas diretoras de teatro do Brasil.'},
+    cinema:   {title:'Em Busca de Tolkien',artist:'Erico Borgo & Laís Almeida',img:'tolkien.webp',desc:'Sessão com curadoria e debate com Erico Borgo e Laís Almeida sobre a obra de J.R.R. Tolkien.'},
+    talks:    {title:'Maluco o Suficiente',artist:'Bráulio Amado',img:'braulio%20amado.jpg',desc:'O premiado designer gráfico fala sobre criatividade, processo e a potência de fazer coisas novas.'},
+    expos:    {title:'Exposição',artist:'Maxwell Alexandre',img:'Maxwell-Alexandre.jpg',desc:'Obra do artista carioca que mistura pintura, escrita e cultura de periferia.'},
+    oficinas: {title:'Escrita Criativa',artist:'Noemi Jaffe',img:'noemi.jpg',desc:'Oficina com a escritora e professora sobre os processos e as armadilhas da escrita literária.'},
+  }},
+  {time:'16h', ev:{
+    teatro:   {title:'Macacos',artist:'Clayton Nascimento',img:'macacos.png',desc:'Peça sobre raça, identidade e sociedade — um dos trabalhos mais potentes do teatro brasileiro recente.'},
+    cinema:   {title:'Retratos Fantasmas',artist:'Kleber Mendonça',img:'retratosfantasmas.jpg',desc:'Documentário sobre os cinemas de Recife, com debate após a sessão com o diretor.'},
+    talks:    {title:'Representando Mundos',artist:'Mina Lima',img:'minalima.jpg',desc:'A dupla de designers que criou a identidade visual do universo Harry Potter fala sobre seu processo criativo.'},
+    expos:    {title:'Exposição',artist:'Paula Siebra',img:'paula-siebra.jpg',desc:'Trabalho visual em diálogo com o espaço do Cidade das Artes.'},
+    oficinas: {title:'Colagem',artist:'Giovanna Cianelli',img:'Giovanna-Cianelli.png',desc:'Oficina de colagem analógica — recorte, composição e imagem como escrita.'},
+    culinaria:{title:'Almoço',artist:'',desc:'Pausa gastronômica com menu especialmente criado para o ArtCon.'},
+  }},
+  {time:'19h', ev:{
+    teatro:{title:'Céu da Língua',artist:'Gregório Duvivier',img:'ceudalingua.jpg',desc:'Espetáculo solo sobre a beleza e os abismos da língua portuguesa. Um dos trabalhos mais aclamados de Duvivier.'},
+    cinema:{title:'Malês',artist:'Camila Pitanga & Antônio Pitanga',img:'males.jpg',desc:'Projeto cinematográfico sobre a revolta dos escravizados Malês — com debate após a sessão.'},
+  }},
+  {time:'21h30', ev:{
+    musica:   {title:'Emicida',artist:'+ convidados',img:'Emicida.webp',desc:'Show de encerramento com Emicida e músicos convidados. Uma noite de música preta, brasileira e potente.'},
+    culinaria:{title:'Coquetel',artist:'',desc:'Encerramento com coquetel e confraternização. Noite aberta para trocas e conexões.'},
+  }},
+];
+
+// Build grid
+function buildGrid(){
+  const grid=document.getElementById('sched-grid');
+
+  // Header
+  const hrow=document.createElement('div');
+  hrow.className='sched-header-row';
+  hrow.innerHTML='<div></div>';
+  CATS.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='col-head';
+    d.dataset.anim='';
+    d.style.transitionDelay=`${.04+i*.055}s`;
+    d.innerHTML=`<span class="dot" style="background:${c.color}"></span>${c.label}`;
+    hrow.appendChild(d);
+  });
+  grid.appendChild(hrow);
+
+  // Rows
+  SCHED.forEach((row,ri)=>{
+    const r=document.createElement('div');
+    r.className='sched-row';
+
+    const tl=document.createElement('div');
+    tl.className='time-cell';
+    tl.dataset.anim='';
+    tl.style.transitionDelay=`${.08+ri*.07}s`;
+    tl.textContent=row.time;
+    r.appendChild(tl);
+
+    CATS.forEach((cat,ci)=>{
+      const ev=row.ev[cat.id];
+      if(ev){
+        const cell=document.createElement('div');
+        cell.className='ev-cell';
+        cell.dataset.anim='';
+        cell.style.transitionDelay=`${.06+ri*.055+ci*.022}s`;
+
+        const inner=document.createElement('div');
+        inner.className='ev-inner';
+        inner.style.setProperty('--c',cat.color);
+        inner.style.background=cat.color;
+        inner.innerHTML=`<div class="ev-title">${ev.title}</div>${ev.artist?`<div class="ev-artist">${ev.artist}</div>`:''}`;
+
+        inner.addEventListener('mouseenter',e=>showTip(e,cat,ev,row.time));
+        inner.addEventListener('mouseleave',hideTip);
+        inner.addEventListener('mousemove',moveTip);
+
+        cell.appendChild(inner);
+        r.appendChild(cell);
+      } else {
+        const empty=document.createElement('div');
+        empty.className='empty-cell';
+        r.appendChild(empty);
+      }
+    });
+    grid.appendChild(r);
+  });
+}
+
+// Tooltip
+const tip=document.getElementById('tooltip');
+
+function showTip(e,cat,ev,time){
+  const banner=document.getElementById('tt-banner');
+  banner.style.background=`linear-gradient(135deg,${cat.color}cc,${cat.color}66)`;
+  // image
+  let imgEl=banner.querySelector('img');
+  if(ev.img){
+    if(!imgEl){imgEl=document.createElement('img');imgEl.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 15%;opacity:.9';banner.prepend(imgEl);}
+    imgEl.src=ev.img;
+    imgEl.style.display='block';
+  } else if(imgEl){
+    imgEl.style.display='none';
+  }
+  const bnName=document.getElementById('tt-banner-name');
+  if(ev.img){bnName.textContent='';} else {bnName.textContent=ev.artist||ev.title;}
+  document.getElementById('tt-banner-cat').textContent=cat.label;
+  document.getElementById('tt-title').textContent=ev.title;
+  document.getElementById('tt-artist').textContent=ev.artist||'';
+  document.getElementById('tt-desc').textContent=ev.desc;
+  document.getElementById('tt-time').textContent=time;
+  tip.classList.add('show');
+  posTip(e);
+}
+function hideTip(){tip.classList.remove('show');}
+function moveTip(e){posTip(e);}
+function posTip(e){
+  const W=310,H=310,M=16;
+  let x=e.clientX+20,y=e.clientY-70;
+  if(x+W>window.innerWidth-M) x=e.clientX-W-20;
+  if(y+H>window.innerHeight-M) y=window.innerHeight-H-M;
+  if(y<M) y=M;
+  tip.style.left=x+'px';tip.style.top=y+'px';
+}
+
+// Scroll animation
+function initAnim(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});
+  },{threshold:.06,rootMargin:'0px 0px -20px 0px'});
+  document.querySelectorAll('[data-anim]').forEach(el=>obs.observe(el));
+}
+
+const CAT_COLORS={
+  'Teatro':'#2563eb','Cinema':'#d97706','Música':'#dc2626',
+  'Design':'#16a34a','Artes Visuais':'#0891b2','Literatura':'#7c3aed',
+  'Poesia':'#9333ea','Oficinas':'#db2777'
+};
+
+const PARTS=[
+  {name:'Marcos Valle',     role:'Música',        img:'biosimg/marcosvalle.jpg',  desc:'Compositor e cantor, autor de Samba de Verão. Um dos maiores nomes da MPB.'},
+  {name:'Emicida',          role:'Música',         img:'biosimg/Emicida.jpg',     desc:'Rapper, produtor e ativista. Um dos artistas mais importantes da música brasileira hoje.'},
+  {name:'Gregório Duvivier',role:'Teatro',         img:'ceudalingua.jpg',         desc:'Ator, escritor e comediante. Céu da Língua é um dos espetáculos mais aclamados da temporada.'},
+  {name:'Julia Portes',     role:'Teatro',         img:'biosimg/juliaportes.jpg', desc:'Uma das mais premiadas diretoras de teatro do Brasil.'},
+  {name:'Clayton Nascimento',role:'Teatro',        img:'biosimg/clayton.webp',    desc:'Dramaturgo e ator. Macacos é uma obra fundamental sobre raça e identidade.'},
+  {name:'Kleber Mendonça',  role:'Cinema',         img:'biosimg/kleber.jpg',      desc:'Diretor de Aquarius e Bacurau. Um dos cineastas mais relevantes do Brasil.'},
+  {name:'Camila Pitanga',   role:'Cinema',         img:'males.jpg',               desc:'Atriz e produtora à frente do projeto Malês — sobre a revolta dos escravizados Malês.'},
+  {name:'Bráulio Amado',    role:'Design',         img:'biosimg/BraulioAmado.jpeg',   desc:'Designer gráfico premiado internacionalmente por capas de discos e pôsteres icônicos.'},
+  {name:'Mina Lima',        role:'Design',         img:'biosimg/minalima.jpg',         desc:'Duo criadores da identidade visual do universo Harry Potter e de projetos editoriais únicos.'},
+  {name:'Maxwell Alexandre',role:'Artes Visuais',  img:'biosimg/maxwell.png',         desc:'Artista carioca que mistura pintura, escrita e cultura periférica em obras de grande impacto.'},
+  {name:'Paula Siebra',     role:'Artes Visuais',  img:'paula-siebra.jpg',            desc:'Artista visual com trabalho em diálogo com o espaço, o corpo e a memória.'},
+  {name:'Noemi Jaffe',      role:'Literatura',     img:'noemi.jpg',                   desc:'Escritora e professora. Autora de O que é isso tudo, um dos romances mais aclamados da literatura brasileira recente.'},
+  {name:'Helena Obersteiner',role:'Oficinas',      img:'helena.jpeg',                 desc:'Artista visual. Conduz o Desenhaço Poético ao lado da poeta Angélica Freitas.'},
+  {name:'Angélica Freitas',  role:'Poesia',        img:'biosimg/angelicafreitas.jpg', desc:'Poeta e escritora. Autora de Rilke Shake. Conduz o Desenhaço Poético com Helena Obersteiner.'},
+  {name:'Giovanna Cianelli', role:'Oficinas',      img:'Giovanna-Cianelli.png',       desc:'Artista e educadora. Oficina de colagem analógica — imagem como processo e escrita.'},
+  {name:'Antônio Pitanga',   role:'Cinema',        img:'biosimg/Antonio-Pitanga.webp', desc:'Ator e ativista. Um dos maiores nomes do cinema e teatro brasileiro, pai de Camila Pitanga.'},
+  {name:'Erico Borgo',       role:'Cinema',        img:'biosimg/erico.webp',          desc:'Crítico e curador de cinema. Especialista na obra de Tolkien e cinema fantástico.'},
+  {name:'Laís Almeida',      role:'Cinema',        img:'biosimg/lais.jpg',            desc:'Curadora e especialista em literatura e adaptações cinematográficas.'},
+];
+
+function buildParts(){
+  const grid=document.getElementById('part-grid');
+  PARTS.forEach((p,i)=>{
+    const card=document.createElement('div');
+    card.className='part-card';
+    card.dataset.anim='';
+    card.style.transitionDelay=`${.04+i*.045}s`;
+    const color=CAT_COLORS[p.role]||'#555';
+    const initials=p.name.split(' ').slice(0,2).map(w=>w[0]).join('');
+    card.innerHTML=`
+      <div class="part-avatar" style="--av-color:${color}">
+        <img src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="part-avatar-initials" style="display:none">${initials}</div>
+      </div>
+      <div class="part-name">${p.name}</div>
+      <div class="part-role" style="--role-color:${color}">${p.role}</div>
+      <div class="part-desc">${p.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+buildGrid();
+buildParts();
+initAnim();
+</script>
+</body>
+</html>
